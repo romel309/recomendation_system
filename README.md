@@ -14,6 +14,7 @@
 
 # rake db:drop db:create db:migrate
 
+# https://recomend-movies-romel309.c9users.io/phpmyadmin
 
 # rail g controller raitings
 
