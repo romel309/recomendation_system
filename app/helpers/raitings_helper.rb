@@ -1,0 +1,2 @@
+module RaitingsHelper
+end

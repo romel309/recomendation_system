@@ -1,0 +1,19 @@
+<table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Title</th>
+        <th>Genres</th>
+      </tr>
+    </thead>
+  
+    <tbody>
+      <% @movies.each do |movie| %>
+        <tr>
+          <td><%=movie.id%></td>
+          <td><%=movie.title%></td>
+          <td><%=movie.genres%></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
