@@ -1,3 +1,25 @@
+<h1>All life ratings from user: </h1>
 
-<p><%= @users.user.email %></p>
-<p><%= @users.movie.title %></p>
+<table>
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Title</th>
+        <th>Raiting</th>
+      </tr>
+    </thead>
+
+    <% @users_ratings.each do |user| %>
+            <tr>
+              <td><%=user.user.email%></td>
+              <td>id: <%=user.movie.id%> <%=user.movie.title%></td>
+              <td><%=user.rating%></td>
+            </tr>
+    <% end %>
+    
+    </tbody>
+</table>
+
+<%= will_paginate @users_ratings %>
+
+<h1>Recomended movies</h1>
