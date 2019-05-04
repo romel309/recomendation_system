@@ -22,4 +22,14 @@
 
 <%= will_paginate @users_ratings %>
 
+<h1>Most similar users</h1>
+
+<% @most_similar_users.each do |msu| %>
+  <p><%=msu%></p>
+<% end %>
+
 <h1>Recomended movies</h1>
+
+<% @movies_to_recomend.each do |name| %>
+  <p><%=name%></p>
+<% end %>

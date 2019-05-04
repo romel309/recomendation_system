@@ -70,7 +70,6 @@ class UsersController < ApplicationController
         lalin = params[:id].to_i
         user_to_compare = matrix_recommended[lalin-1]
         list_similarity_user = Array.new
-        
         while (iterator < matrix_recommended.length)
             cust1 = Cosine.new(user_to_compare, matrix_recommended[iterator])
             res=cust1.calculate_similarity
@@ -78,44 +77,95 @@ class UsersController < ApplicationController
             iterator=iterator+1
         end
         
-=begin
-        while (iterator < matrix_recommended.length)
-            sum = 0
-            dot_cros_user = 0
-            dot_cross_user2 = 0
-            i=0
-            j=0
-            #user_to_compare.each do |element|
-            while (j < user_to_compare.length)
-                user_to_compare.zip(matrix_recommended).map{|x, y| x * y}
-                sum = sum + (user_to_compare[j]*matrix_recommended[iterator][i])
-                dot_cros_user = dot_cros_user+(user_to_compare[j]**2)
-                dot_cross_user2 = dot_cross_user2+(matrix_recommended[iterator][i]**2)
-                j=j+1
-            end
-            if iterator==1
-                puts "sum #{sum}."
-                puts "dot_cros_user #{dot_cros_user}."
-                puts "dot_cross_user2 #{dot_cross_user2}."
-                puts "sqrt dot_cross_user #{Math.sqrt(dot_cros_user)}."
-                puts "sqrt dot_cross_user2 #{Math.sqrt(dot_cross_user2)}."
-            end    
-            res = sum/(Math.sqrt(dot_cros_user)*Math.sqrt(dot_cross_user2))
-            if iterator==1
-                puts "res #{res}."
-            end
-            list_similarity_user.push(res)
-            iterator = iterator+1
+        #Index of the 10 similar users
+        aux_list_similarity_user = list_similarity_user
+        max_similarity_users = Array.new
+        index_similarity_users = Array.new
+        i = 0
+        while (i < 10)
+            max_value = aux_list_similarity_user.max
+            max_similarity_users.push(max_value)
+            index_value = aux_list_similarity_user.index(max_value)
+            index_similarity_users.push(index_value)
+            aux_list_similarity_user[index_value] = 0
+            i=i+1
         end
-=end
         
-        puts "max #{list_similarity_user.at(1)}."
+        @most_similar_users = index_similarity_users
+        
+        i=0
+        division = max_similarity_users.inject(:+)
+        puts "division #{max_similarity_users}."
+        new_ratings_user_to_compare = user_to_compare
+        while (i < user_to_compare.length)
+            j=0
+            aux_max_similarity_users=max_similarity_users
+            num = Array.new
+            if user_to_compare.at(i) == 0
+                #predict
+                while (j < max_similarity_users.length)
+                    #sum+=(matrix_recommended[index_similarity_users[j]][i]*max_similarity_users[j])
+                    num.push(matrix_recommended[index_similarity_users[j]][i])
+                    j=j+1
+                end
+                
+                if i==1
+                    puts "si entra"
+                end
+            else
+                user_to_compare[i]=0
+            end
+    
+            num.zip(aux_max_similarity_users).map{|x, y| x * y}
+            amor = num.inject(0){|sum,x| sum + x }
+            if i==1
+                puts "user_to_compare #{user_to_compare[1]}"
+                puts "j #{j}"
+                puts "index_similarity_users #{index_similarity_users}."
+                puts "array max_similarity_users #{max_similarity_users}."
+                puts "max_similarity_users #{max_similarity_users[0]}."
+                puts "ayuda #{matrix_recommended[index_similarity_users[0]][0]}."
+                puts "ayuda #{matrix_recommended[index_similarity_users[1]][0]}."
+                puts "ayuda #{matrix_recommended[index_similarity_users[2]][0]}."
+                puts "ayuda #{matrix_recommended[index_similarity_users[3]][0]}."
+                puts "ayuda #{matrix_recommended[index_similarity_users[4]][0]}."
+                puts "ayuda #{matrix_recommended[index_similarity_users[5]][0]}."
+                puts "ayuda #{matrix_recommended[index_similarity_users[6]][0]}."
+                puts "ayuda #{matrix_recommended[index_similarity_users[7]][0]}."
+                puts "ayuda #{matrix_recommended[index_similarity_users[8]][0]}."
+                puts "ayuda #{matrix_recommended[index_similarity_users[9]][0]}."
+                puts "sum #{num}."
+                puts "amor #{amor}."
+            end
+            if amor>0
+                new_ratings_user_to_compare[i]=amor/division
+            end
+            i=i+1
+        end
+        
+        puts "division #{division}."
         #puts "Length #{list_similarity_user.length}."
         
         #Prediccion de peliculas
+        #Mostrar las peliculas
+        matrix_movies = Array.new
+        #max_similarity_movies = Array.new
+        #index_similarity_movies = Array.new
+        i = 0
+        while (i < 10)
+            aux_matrix_movies = Array.new
+            max_movie_value = new_ratings_user_to_compare.max
+            index_max_movie_value = new_ratings_user_to_compare.index(max_movie_value)
+            new_ratings_user_to_compare[index_max_movie_value]=0
+            aux_matrix_movies.push(movies_identifiers[index_max_movie_value])
+            aux_matrix_movies.push(max_movie_value)
+            matrix_movies.push(aux_matrix_movies)
+            i=i+1
+        end
+        
+        @movies_to_recomend=matrix_movies
         
         #Mostrar los ratings del usuario
         @users_ratings = Rating.where("user_id = ?", params[:id]).paginate(page: params[:page], per_page: 10)
-        
     end
 end
