@@ -23,7 +23,7 @@ class UsersController < ApplicationController
         @users = User.paginate(page: params[:page], per_page: 30)
     end
     
-    def show 
+    def show
         #Hacer un arreglo con los id de las peliculas
         movies_identifiers = Array.new
         @m = Movie.select("id")
@@ -89,6 +89,21 @@ class UsersController < ApplicationController
         iterator = 0
         user_to_compare = Array.new
         lalin = params[:id].to_i
+        #Test cases for user number 503
+        if (lalin==503)
+            #matrix_recommended[502][314]=0
+            #matrix_recommended[502][277]=0
+            #matrix_recommended[502][257]=0
+            #matrix_recommended[502][418]=0
+            #matrix_recommended[502][418]=0
+            #matrix_recommended[502][461]=0
+            #matrix_recommended[502][659]=0
+            #matrix_recommended[502][915]=0
+            #matrix_recommended[502][1503]=0
+            #matrix_recommended[502][2226]=0
+            #matrix_recommended[502][510]=0
+        end
+        
         user_to_compare = matrix_recommended[lalin-1]
         list_similarity_user = Array.new
         while (iterator < matrix_recommended.length)
@@ -100,10 +115,7 @@ class UsersController < ApplicationController
             list_similarity_user.push(res)
             iterator=iterator+1
         end
-        
-         puts "Funciono cosine similarity? #{list_similarity_user}."
-        
-       
+
         #Index of the 10 similar users
         aux_list_similarity_user = list_similarity_user
         max_similarity_users = Array.new
@@ -131,13 +143,8 @@ class UsersController < ApplicationController
             if user_to_compare.at(i) == 0
                 #predict
                 while (j < max_similarity_users.length)
-                    #sum+=(matrix_recommended[index_similarity_users[j]][i]*max_similarity_users[j])
                     num.push(matrix_recommended[index_similarity_users[j]][i])
                     j=j+1
-                end
-                
-                if i==1
-                    puts "si entra"
                 end
             else
                 user_to_compare[i]=0
@@ -145,68 +152,28 @@ class UsersController < ApplicationController
     
             num.zip(aux_max_similarity_users).map{|x, y| x * y}
             amor = num.inject(0){|sum,x| sum + x }
-            if lalin==1
-                #puts "user_to_compare #{user_to_compare[1]}"
-                puts "j #{j}"
-                #puts "index_similarity_users #{index_similarity_users}."
-                puts "array max_similarity_users #{max_similarity_users}."
-                #puts "max_similarity_users #{max_similarity_users}."
-                puts "ayuda #{matrix_recommended[index_similarity_users[0]][2]}."
-                puts "ayuda #{matrix_recommended[index_similarity_users[1]][2]}."
-                puts "ayuda #{matrix_recommended[index_similarity_users[2]][2]}."
-                puts "ayuda #{matrix_recommended[index_similarity_users[3]][2]}."
-                puts "ayuda #{matrix_recommended[index_similarity_users[4]][2]}."
-                puts "ayuda #{matrix_recommended[index_similarity_users[5]][2]}."
-                puts "ayuda #{matrix_recommended[index_similarity_users[6]][2]}."
-                puts "ayuda #{matrix_recommended[index_similarity_users[7]][2]}."
-                puts "ayuda #{matrix_recommended[index_similarity_users[8]][2]}."
-                puts "ayuda #{matrix_recommended[index_similarity_users[9]][2]}."
-                puts "sum #{num}."
-                puts "amor #{amor}."
-            end
             if amor>0
                 new_ratings_user_to_compare[i]=amor/division
             end
             i=i+1
         end
         
-        if lalin==1
-        puts "division #{division}."
-        puts "movie id 2 #{new_ratings_user_to_compare[2]}."
-        puts "movie id 5 #{new_ratings_user_to_compare[5]}."
-        puts "movie id 47 #{new_ratings_user_to_compare[43]}."
-        puts "movie id 50 #{new_ratings_user_to_compare[46]}."
-        puts "movie id 70 #{new_ratings_user_to_compare[62]}."
-        puts "movie id 101 #{new_ratings_user_to_compare[89]}."
-        puts "movie id 110 #{new_ratings_user_to_compare[97]}."
-        puts "movie id 151 #{new_ratings_user_to_compare[124]}."
-        puts "movie id 157 #{new_ratings_user_to_compare[130]}."
-        #puts "Length #{list_similarity_user.length}."
+        if lalin==503
+        puts "movie id 314 #{new_ratings_user_to_compare[314]}."
+        puts "movie id 277 #{new_ratings_user_to_compare[277]}."
+        puts "movie id 257 #{new_ratings_user_to_compare[257]}."
+        puts "movie id 418 #{new_ratings_user_to_compare[418]}."
+        puts "movie id 461 #{new_ratings_user_to_compare[461]}."
+        puts "movie id 659 #{new_ratings_user_to_compare[659]}."
+        puts "movie id 915 #{new_ratings_user_to_compare[915]}."
+        puts "movie id 1503 #{new_ratings_user_to_compare[1503]}."
+        puts "movie id 2226 #{new_ratings_user_to_compare[2226]}."
+        puts "movie id 510 #{new_ratings_user_to_compare[510]}."
         end
-        
-        if lalin==2
-        puts "division #{division}."
-        puts "movie id 318 #{new_ratings_user_to_compare[277]}."
-        puts "movie id 333 #{new_ratings_user_to_compare[291]}."
-        puts "movie id 1704 #{new_ratings_user_to_compare[1284]}."
-        puts "movie id 2578 #{new_ratings_user_to_compare[2674]}."
-        puts "movie id 4615 #{new_ratings_user_to_compare[6874]}."
-        puts "movie id 8798 #{new_ratings_user_to_compare[5305]}."
-        puts "movie id 46970 #{new_ratings_user_to_compare[6253]}."
-        puts "movie id 48516 #{new_ratings_user_to_compare[6315]}."
-        puts "movie id 58559 #{new_ratings_user_to_compare[6710]}."
-        puts "movie id 6804 #{new_ratings_user_to_compare[6801]}."
-        #puts "Length #{list_similarity_user.length}."
-        end
-        
-        
-        #Prediccion de peliculas
-        #Mostrar las peliculas
+
         matrix_movies = Array.new
-        #max_similarity_movies = Array.new
-        #index_similarity_movies = Array.new
         i = 0
-        while (i < 30)
+        while (i < 10)
             aux_matrix_movies = Array.new
             max_movie_value = new_ratings_user_to_compare.max
             index_max_movie_value = new_ratings_user_to_compare.index(max_movie_value)
